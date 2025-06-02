@@ -8,7 +8,7 @@ export class Bullet {
   sprite: Sprite;
   app: Application;
   constructor(
-    texture: string,
+    texture: Texture,
     position: { x: number; y: number },
     rotation: number,
     app: Application,
@@ -17,28 +17,29 @@ export class Bullet {
     this.texture = texture;
     this.position = position;
     this.rotation = rotation;
-    this.position = { x: 0, y: 0 };
-    this.rotation = 0;
     this.texture = texture;
     this.sprite = new Sprite();
     this.sprite.anchor.set(0.5, 0.5);
     this.sprite.position.set(this.position.x, this.position.y);
     this.sprite.rotation = this.rotation;
-    this.loadTextures();
+    const angle = this.rotation + Math.PI / 2;
+    this.position.x += Math.cos(angle) * 15;
+    this.position.y += Math.sin(angle) * 15;
+    // this.loadTextures();
     app.stage.addChild(this.sprite);
     this.sprite.zIndex = 1;
     app.stage.sortableChildren = true;
+    this.sprite.texture = this.texture as Texture;
+    console.log("Bullet created with texture:", this.texture);
   }
   async loadTextures() {
     this.texture = await Assets.load(this.texture);
-    this.sprite.texture = this.texture as Texture;
   }
 
   tick(deltaTime: number) {
     const angle = this.rotation + Math.PI / 2;
-    this.position.x += Math.cos(angle) * 1 * deltaTime;
-    this.position.y += Math.sin(angle) * 1 * deltaTime;
+    this.position.x += Math.cos(angle) * 10 * deltaTime;
+    this.position.y += Math.sin(angle) * 10 * deltaTime;
     this.sprite.position.set(this.position.x, this.position.y);
-    
   }
 }

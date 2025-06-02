@@ -7,6 +7,7 @@ export class Tank {
 
   bodyTexture: Texture | string;
   barrelTexture: Texture | string;
+  bulletTexture: Texture | string;
   body: Sprite;
   barrel: Sprite;
   speed: number = 0;
@@ -21,6 +22,7 @@ export class Tank {
   stuff: { [key: string]: boolean | string } = {};
   app: Application;
   bullets: Bullet[] = [];
+  fireCooldown: number = 0;
   constructor(
     bodyTexture: string,
     barrelTexture: string,
@@ -38,6 +40,7 @@ export class Tank {
       right: "ArrowRight",
       action: "Space",
     },
+    bulletTexture: string,
   ) {
     this.app = app;
     this.keybinds = keybinds;
@@ -45,6 +48,7 @@ export class Tank {
     this.rotation = 0;
     this.bodyTexture = bodyTexture;
     this.barrelTexture = barrelTexture;
+    this.bulletTexture = bulletTexture;
     this.body = new Sprite();
     this.barrel = new Sprite();
     this.body.anchor.set(0.5);
@@ -63,6 +67,7 @@ export class Tank {
   async loadTextures() {
     this.bodyTexture = await Assets.load(this.bodyTexture);
     this.barrelTexture = await Assets.load(this.barrelTexture);
+    this.bulletTexture = await Assets.load(this.bulletTexture);
     this.body.texture = this.bodyTexture as Texture;
     this.barrel.texture = this.barrelTexture as Texture;
   }
@@ -104,10 +109,10 @@ export class Tank {
   tick(deltaTime: number, pressedKeys: Set<string>) {
     if (this.mode) {
       if (pressedKeys.has(this.keybinds.forward)) {
-        this.speed += 0.15 * deltaTime;
+        this.speed += 0.07 * deltaTime;
       }
       if (pressedKeys.has(this.keybinds.backward)) {
-        this.speed -= 0.15 * deltaTime;
+        this.speed -= 0.07 * deltaTime;
       }
       if (pressedKeys.has(this.keybinds.left)) {
         this.changeRotation(-0.08 * deltaTime);
@@ -160,6 +165,13 @@ export class Tank {
   async fire() {
     for (let index = 0; index < 5; index++) {
       console.log("Firing bullet", index + 1);
+      const bullet = new Bullet(
+        this.bulletTexture as Texture,
+        { x: this.position.x, y: this.position.y },
+        this.barrel.rotation,
+        this.app,
+      );
+      this.bullets.push(bullet);
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }

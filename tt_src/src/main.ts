@@ -32,15 +32,12 @@ window.addEventListener("keyup", (e) => {
       right: "ArrowRight",
       action: "Space",
     },
+    "/assets/bulletRed1.png",
   );
   tank1.setPosition(app.screen.width / 2, app.screen.height / 2);
-  let direction1 = true;
-  let mode1 = false;
-  let mode2 = false;
 
   app.ticker.add((time) => {
     console.log(Array.from(pressedKeys));
     tank1.tick(time.deltaTime, pressedKeys);
-    
   });
 })();

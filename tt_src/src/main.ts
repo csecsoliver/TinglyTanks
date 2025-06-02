@@ -7,10 +7,10 @@ import { Tank } from "./tank";
 // Track currently pressed keys
 const pressedKeys = new Set<string>();
 window.addEventListener("keydown", (e) => {
-  pressedKeys.add(e.key);
+  pressedKeys.add(e.code);
 });
 window.addEventListener("keyup", (e) => {
-  pressedKeys.delete(e.key);
+  pressedKeys.delete(e.code);
 });
 
 (async () => {
@@ -25,6 +25,13 @@ window.addEventListener("keyup", (e) => {
     "/assets/tankBody_red.png",
     "/assets/tankRed_barrel1.png",
     app as Application,
+    {
+      forward: "ArrowUp",
+      backward: "ArrowDown",
+      left: "ArrowLeft",
+      right: "ArrowRight",
+      action: "Space",
+    },
   );
   tank1.setPosition(app.screen.width / 2, app.screen.height / 2);
   let direction1 = true;
@@ -32,7 +39,8 @@ window.addEventListener("keyup", (e) => {
   let mode2 = false;
 
   app.ticker.add((time) => {
-    tank1.changeRotation(0.1 * time.deltaTime);
     console.log(Array.from(pressedKeys));
+    tank1.tick(time.deltaTime, pressedKeys);
+    
   });
 })();

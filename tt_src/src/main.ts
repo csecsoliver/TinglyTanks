@@ -1,9 +1,11 @@
-import { Application, Assets, Sprite } from "pixi.js";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Application, Assets, Graphics, HTMLText, Sprite } from "pixi.js";
 // @ts-expect-error I don't know how this works, but it works
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Level } from "./level";
 import { Tank } from "./tank";
 import { Obstacle } from "./obstacle";
+import { tanks, crates } from "./actors";
 
 // Track currently pressed keys
 const pressedKeys = new Set<string>();
@@ -22,33 +24,36 @@ window.addEventListener("keyup", (e) => {
   await app.init({ background: "#fff", resizeTo: window });
   document.getElementById("pixi-container")!.appendChild(app.canvas);
 
-  const tank1 = new Tank(
-    "/assets/tankred.png",
-    "/assets/barrel.png",
-    app as Application,
-    {
-      forward: "ArrowUp",
-      backward: "ArrowDown",
-      left: "ArrowLeft",
-      right: "ArrowRight",
-      action: "Space",
-    },
-    "/assets/bulletRed1.png",
+  tanks.push(
+    new Tank(
+      "/assets/tankred.png",
+      "/assets/barrel.png",
+      app as Application,
+      {
+        forward: "ArrowUp",
+        backward: "ArrowDown",
+        left: "ArrowLeft",
+        right: "ArrowRight",
+        action: "Space",
+      },
+      "/assets/bulletRed1.png",
+    ),
   );
-  const tank2 = new Tank(
-    "/assets/tankblue.png",
-    "/assets/barrel.png",
-    app as Application,
-    {
-      forward: "KeyW",
-      backward: "KeyS",
-      left: "KeyA",
-      right: "KeyD",
-      action: "Backquote",
-    },
-    "/assets/bulletBlue1.png",
+  tanks.push(
+    new Tank(
+      "/assets/tankblue.png",
+      "/assets/barrel.png",
+      app as Application,
+      {
+        forward: "KeyW",
+        backward: "KeyS",
+        left: "KeyA",
+        right: "KeyD",
+        action: "Backquote",
+      },
+      "/assets/bulletBlue1.png",
+    ),
   );
-  const crates: Obstacle[] = [];
   for (let index = 0; index < 10; index++) {
     crates.push(new Obstacle("/assets/crateWood.png", app as Application));
     crates[index].setPosition(
@@ -56,43 +61,76 @@ window.addEventListener("keyup", (e) => {
       Math.random() * app.screen.height,
     );
   }
-  tank1.setPosition(app.screen.width / 2, app.screen.height / 2);
-  tank2.setPosition(app.screen.width / 2, app.screen.height / 2);
+  tanks[0].setPosition(app.screen.width / 2, app.screen.height / 2);
+  tanks[1].setPosition(app.screen.width / 2, app.screen.height / 2);
+  tanks[0].enemy = tanks[1];
+  tanks[1].enemy = tanks[0];
 
   app.ticker.add((time) => {
+    ui(app);
     console.log(Array.from(pressedKeys));
-    tank1.tick(time.deltaTime, pressedKeys);
-    tank2.tick(time.deltaTime, pressedKeys);
+    tanks[0].tick(time.deltaTime, pressedKeys);
+    tanks[1].tick(time.deltaTime, pressedKeys);
     // collision detection
     if (
       Math.sqrt(
-        (tank1.position.x - tank2.position.x) ** 2 +
-          (tank1.position.y - tank2.position.y) ** 2,
-      ) < 60
+        (tanks[0].position.x - tanks[1].position.x) ** 2 +
+          (tanks[0].position.y - tanks[1].position.y) ** 2,
+      ) < 52
     ) {
-      tank1.bounce(tank2);
-      tank2.bounce(tank1);
+      tanks[0].bounce(tanks[1]);
+      tanks[1].bounce(tanks[0]);
     }
     for (const element of crates) {
       if (
         Math.sqrt(
-          (tank1.position.x - element.position.x) ** 2 +
-            (tank1.position.y - element.position.y) ** 2,
-        ) < 45
+          (tanks[0].position.x - element.position.x) ** 2 +
+            (tanks[0].position.y - element.position.y) ** 2,
+        ) < 50
       ) {
-        tank1.bounce(element);
-        element.bounce(tank1);
+        tanks[0].bounce(element);
+        element.bounce(tanks[0]);
       }
       if (
         Math.sqrt(
-          (tank2.position.x - element.position.x) ** 2 +
-            (tank2.position.y - element.position.y) ** 2,
-        ) < 45
+          (tanks[1].position.x - element.position.x) ** 2 +
+            (tanks[1].position.y - element.position.y) ** 2,
+        ) < 50
       ) {
-        tank2.bounce(element);
-        element.bounce(tank2);
+        tanks[1].bounce(element);
+        element.bounce(tanks[1]);
       }
     }
-
   });
 })();
+
+function ui(app: Application) {
+  // Remove previous healthbars
+  app.stage
+    .getChildrenByLabel("healthbar")
+    .forEach((child) => app.stage.removeChild(child));
+
+  // Draw healthbars for each tank
+  tanks.forEach((tank, i) => {
+    const barWidth = 60;
+    const barHeight = 8;
+    const healthPercent = Math.max(0, Math.min(1, tank.health / 100));
+    const bar = new Graphics();
+    bar.label = `healthbar`;
+    // Background
+    bar.rect(-barWidth / 2, -tank.body.height / 2 - 20, barWidth, barHeight);
+    bar.fill(0xcccccc);
+    // Health
+    bar.rect(
+      -barWidth / 2,
+      -tank.body.height / 2 - 20,
+      barWidth * healthPercent,
+      barHeight,
+    );
+    bar.fill(0xff4444);
+    // Position above tank
+    bar.x = tank.position.x;
+    bar.y = tank.position.y;
+    app.stage.addChild(bar);
+  });
+}

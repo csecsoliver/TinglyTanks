@@ -7,7 +7,7 @@ import { Obstacle } from "./obstacle";
 export class Tank {
   position: { x: number; y: number };
   rotation: number;
-
+  health: number = 100;
   bodyTexture: Texture | string;
   barrelTexture: Texture | string;
   bulletTexture: Texture | string;
@@ -27,6 +27,7 @@ export class Tank {
   app: Application;
   bullets: Bullet[] = [];
   fireCooldown: number = 0;
+  enemy: Tank | null = null;
   constructor(
     bodyTexture: string,
     barrelTexture: string,
@@ -47,6 +48,7 @@ export class Tank {
     bulletTexture: string,
   ) {
     this.app = app;
+
     this.keybinds = keybinds;
     this.position = { x: 0, y: 0 };
     this.rotation = 0;
@@ -127,10 +129,10 @@ export class Tank {
       }
     } else {
       if (pressedKeys.has(this.keybinds.left)) {
-        this.changeBarrelRotation(-0.05 * deltaTime);
+        this.changeBarrelRotation(-0.035 * deltaTime);
       }
       if (pressedKeys.has(this.keybinds.right)) {
-        this.changeBarrelRotation(0.05 * deltaTime);
+        this.changeBarrelRotation(0.035 * deltaTime);
       }
     }
     if (pressedKeys.has(this.keybinds.action)) {
@@ -177,6 +179,12 @@ export class Tank {
         (otherTank.position.y - this.position.y) * 0.05,
       ),
     );
+    if (otherTank instanceof Tank) {
+      otherTank.speed *= 0.1;
+    }
+  }
+  takeDamage(damage: number) {
+    this.health -= damage;
   }
   async fire() {
     for (let index = 0; index < 5; index++) {
@@ -186,6 +194,7 @@ export class Tank {
         { x: this.position.x, y: this.position.y },
         this.barrel.rotation,
         this.app,
+        this.enemy as Tank,
       );
       this.bullets.push(bullet);
       await new Promise((resolve) => setTimeout(resolve, 100));

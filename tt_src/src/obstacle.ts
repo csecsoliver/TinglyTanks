@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Application, Assets, Sprite, Texture } from "pixi.js";
 import { Bullet } from "./bulle";
 import Victor from "victor";

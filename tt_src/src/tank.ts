@@ -22,6 +22,7 @@ export class Tank {
     right: string;
     action: string;
   };
+  color: string; // default color
   mode: boolean = true; // true = tank, false = turret
   stuff: { [key: string]: boolean | string } = {};
   app: Application;
@@ -46,15 +47,17 @@ export class Tank {
       action: "",
     },
     bulletTexture: string,
+    rotation: number, // 135 degrees in radians
   ) {
     this.app = app;
 
     this.keybinds = keybinds;
     this.position = { x: 0, y: 0 };
-    this.rotation = 0;
+    this.rotation = rotation;
     this.bodyTexture = bodyTexture;
     this.barrelTexture = barrelTexture;
     this.bulletTexture = bulletTexture;
+    this.color = bodyTexture.split("k")[1].split(".")[0];
     this.body = new Sprite();
     this.barrel = new Sprite();
     this.body.anchor.set(0.5, 0.535);
@@ -137,15 +140,34 @@ export class Tank {
     }
     if (pressedKeys.has(this.keybinds.action)) {
       if (this.stuff.switch) {
-        this.mode = !this.mode;
-        this.stuff.switch = false;
-        console.log("Mode switched to", this.mode ? "tank" : "turret");
-        if (this.mode) {
-          this.fire();
+        switch (this.mode) {
+          case true:
+            if (this.fireCooldown <= 0) {
+              console.log("Mode switched to turret");
+              this.body.alpha = 0.5;
+              this.mode = false;
+              this.stuff.switch = false;
+            }
+            break;
+          case false:
+            this.fireCooldown = 90;
+            console.log("Mode switched to tank");
+            this.body.alpha = 1;
+            this.mode = true;
+            this.stuff.switch = false;
+            this.fire();
+            break;
         }
       }
     } else {
       this.stuff.switch = true;
+    }
+    if (this.fireCooldown > 0) {
+      this.fireCooldown -= deltaTime;
+      console.log("Fire cooldown:", this.fireCooldown);
+      this.barrel.alpha = 0.5;
+    } else {
+      this.barrel.alpha = 1;
     }
     if (this.position.x < 0) {
       this.changePosition(1, 0);

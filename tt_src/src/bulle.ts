@@ -37,7 +37,7 @@ export class Bullet {
     app.stage.sortableChildren = true;
     this.sprite.texture = this.texture as Texture;
     console.log("Bullet created with texture:", this.texture);
-    this.sprite.setSize(5);
+    this.sprite.setSize(10);
   }
   async loadTextures() {
     this.texture = await Assets.load(this.texture);

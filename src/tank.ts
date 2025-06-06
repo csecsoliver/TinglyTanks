@@ -48,7 +48,7 @@ export class Tank {
       action: "",
     },
     bulletTexture: string,
-    rotation: number, // 135 degrees in radians
+    rotation: number,
   ) {
     this.app = app;
 

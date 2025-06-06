@@ -11,16 +11,14 @@ import { Jumppad } from "./jumppad";
 const pressedKeys = new Set<string>();
 window.addEventListener("keydown", (e) => {
   pressedKeys.add(e.code);
-  e.preventDefault(); // Prevent default actions like scrolling
+  e.preventDefault();
 });
 window.addEventListener("keyup", (e) => {
   pressedKeys.delete(e.code);
-  e.preventDefault(); // Prevent default actions like scrolling
+  e.preventDefault(); 
 });
 init();
 async function init() {
-  // Create a new application
-
   // @ts-expect-error I don't know how this works, but maybe it works
   globalThis.__PIXI_APP__?.destroy();
   const app = new Application();
@@ -153,7 +151,6 @@ async function init() {
 }
 
 async function ui(app: Application) {
-  // Remove previous healthbars
   app.stage
     .getChildrenByLabel("healthbar")
     .forEach((child) => app.stage.removeChild(child));
@@ -161,14 +158,12 @@ async function ui(app: Application) {
     .getChildrenByLabel("altitudebar")
     .forEach((child) => app.stage.removeChild(child));
 
-  // Draw healthbars for each tank
   for (const tank of tanks) {
     const healthBarWidth = 60;
     const healthBarHeight = 8;
     const healthPercent = Math.max(0, Math.min(1, tank.health / 100));
     const HealthBar = new Graphics();
     HealthBar.label = `healthbar`;
-    // Background
     HealthBar.rect(
       -healthBarWidth / 2,
       -tank.body.height / 2 - 20,
@@ -176,7 +171,6 @@ async function ui(app: Application) {
       healthBarHeight,
     );
     HealthBar.fill(0xcccccc);
-    // Health
     HealthBar.rect(
       -healthBarWidth / 2,
       -tank.body.height / 2 - 20,
@@ -184,7 +178,6 @@ async function ui(app: Application) {
       healthBarHeight,
     );
     HealthBar.fill(0xff4444);
-    // Position above tank
     HealthBar.x = tank.position.x;
     HealthBar.y = tank.position.y;
     app.stage.addChild(HealthBar);
@@ -194,7 +187,6 @@ async function ui(app: Application) {
     const altitudePercent = Math.max(0, Math.min(1, tank.altitude / 20));
     const altitudeBar = new Graphics();
     altitudeBar.label = `altitudebar`;
-    // Background
     altitudeBar.rect(
       -altitudeBarWidth / 2,
       -tank.body.height / 2 - 30,
@@ -202,7 +194,6 @@ async function ui(app: Application) {
       altitudeBarHeight,
     );
     altitudeBar.fill(0xcccccc);
-    // Health
     altitudeBar.rect(
       -altitudeBarWidth / 2,
       -tank.body.height / 2 - 30,
@@ -210,7 +201,6 @@ async function ui(app: Application) {
       altitudeBarHeight,
     );
     altitudeBar.fill(0x006600);
-    // Position above tank
     altitudeBar.x = tank.position.x;
     altitudeBar.y = tank.position.y;
     app.stage.addChild(altitudeBar);

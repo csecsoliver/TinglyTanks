@@ -23,7 +23,7 @@ async function init() {
   const app = new Application();
   // @ts-expect-error I don't know how this works, but it works
   globalThis.__PIXI_APP__ = app as Application;
-  await app.init({ background: "#fff", resizeTo: window });
+  await app.init({ background: "#000", resizeTo: window });
   document.getElementById("pixi-container")!.appendChild(app.canvas);
   const tilingSprite = new TilingSprite({
     texture: await Assets.load("./assets/background.png"),

@@ -26,7 +26,7 @@ async function init() {
   await app.init({ background: "#fff", resizeTo: window });
   document.getElementById("pixi-container")!.appendChild(app.canvas);
   const tilingSprite = new TilingSprite({
-    texture: await Assets.load("/assets/background.png"),
+    texture: await Assets.load("./assets/background.png"),
     width: app.screen.width,
     height: app.screen.height,
   });
@@ -38,8 +38,8 @@ async function init() {
   crates.length = 0;
   tanks.push(
     new Tank(
-      "/assets/tankred.png",
-      "/assets/barrel.png",
+      "./assets/tankred.png",
+      "./assets/barrel.png",
       app as Application,
       {
         forward: "ArrowUp",
@@ -48,14 +48,14 @@ async function init() {
         right: "ArrowRight",
         action: "Space",
       },
-      "/assets/bulletRed1.png",
+      "./assets/bulletRed1.png",
       -0.25 * Math.PI,
     ),
   );
   tanks.push(
     new Tank(
-      "/assets/tankblue.png",
-      "/assets/barrel.png",
+      "./assets/tankblue.png",
+      "./assets/barrel.png",
       app as Application,
       {
         forward: "KeyW",
@@ -64,12 +64,12 @@ async function init() {
         right: "KeyD",
         action: "Backquote",
       },
-      "/assets/bulletBlue1.png",
+      "./assets/bulletBlue1.png",
       0.75 * Math.PI,
     ),
   );
   for (let index = 0; index < 10; index++) {
-    crates.push(new Obstacle("/assets/crate.png", app as Application));
+    crates.push(new Obstacle("./assets/crate.png", app as Application));
     crates[index].setPosition(
       Math.random() * app.screen.width,
       Math.random() * app.screen.height,
@@ -146,7 +146,7 @@ async function ui(app: Application) {
     bar.y = tank.position.y;
     app.stage.addChild(bar);
     if (tank.health <= 0) {
-      const explosion = new Sprite(await Assets.load("/assets/explosion.png"));
+      const explosion = new Sprite(await Assets.load("./assets/explosion.png"));
       explosion.anchor.set(0.5);
       explosion.position.set(tank.position.x, tank.position.y);
       explosion.zIndex = 2;

@@ -55,7 +55,7 @@ export class Bullet {
     ) {
       this.enemy.takeDamage(10);
       this.live = false;
-      this.explode("/assets/explosion.png", {
+      this.explode("./assets/explosion.png", {
         x: this.position.x,
         y: this.position.y,
       });
@@ -69,7 +69,7 @@ export class Bullet {
         this.live
       ) {
         this.live = false;
-        this.explode("/assets/explosion.png", {
+        this.explode("./assets/explosion.png", {
           x: this.position.x,
           y: this.position.y,
         });

@@ -4,15 +4,18 @@ import { Application, Assets, Graphics, Sprite, TilingSprite } from "pixi.js";
 import { Level } from "./level";
 import { Tank } from "./tank";
 import { Obstacle } from "./obstacle";
-import { tanks, crates } from "./actors";
+import { tanks, crates, jumppads } from "./actors";
+import { Jumppad } from "./jumppad";
 
 // Track currently pressed keys
 const pressedKeys = new Set<string>();
 window.addEventListener("keydown", (e) => {
   pressedKeys.add(e.code);
+  e.preventDefault(); // Prevent default actions like scrolling
 });
 window.addEventListener("keyup", (e) => {
   pressedKeys.delete(e.code);
+  e.preventDefault(); // Prevent default actions like scrolling
 });
 init();
 async function init() {
@@ -75,6 +78,13 @@ async function init() {
       Math.random() * app.screen.height,
     );
   }
+  for (let index = 0; index < 3; index++) {
+    jumppads.push(new Jumppad("./assets/boostpad.png", app as Application));
+    jumppads[index].setPosition(
+      Math.random() * app.screen.width,
+      Math.random() * app.screen.height,
+    );
+  }
   tanks[0].setPosition(64, 64);
   tanks[1].setPosition(app.screen.width - 64, app.screen.height - 64);
   tanks[0].enemy = tanks[1];
@@ -89,7 +99,9 @@ async function init() {
       Math.sqrt(
         (tanks[0].position.x - tanks[1].position.x) ** 2 +
           (tanks[0].position.y - tanks[1].position.y) ** 2,
-      ) < 52
+      ) < 52 &&
+      tanks[0].altitude <= 0 &&
+      tanks[1].altitude <= 0
     ) {
       tanks[0].bounce(tanks[1]);
       tanks[1].bounce(tanks[0]);
@@ -99,7 +111,8 @@ async function init() {
         Math.sqrt(
           (tanks[0].position.x - element.position.x) ** 2 +
             (tanks[0].position.y - element.position.y) ** 2,
-        ) < 50
+        ) < 50 &&
+        tanks[0].altitude <= 0
       ) {
         tanks[0].bounce(element);
         element.bounce(tanks[0]);
@@ -108,12 +121,33 @@ async function init() {
         Math.sqrt(
           (tanks[1].position.x - element.position.x) ** 2 +
             (tanks[1].position.y - element.position.y) ** 2,
-        ) < 50
+        ) < 50 &&
+        tanks[1].altitude <= 0
       ) {
         tanks[1].bounce(element);
         element.bounce(tanks[1]);
       }
       element.tick(time.deltaTime);
+    }
+    for (const element of jumppads) {
+      if (
+        Math.sqrt(
+          (tanks[0].position.x - element.position.x) ** 2 +
+            (tanks[0].position.y - element.position.y) ** 2,
+        ) < 50 &&
+        tanks[0].altitude <= 0
+      ) {
+        tanks[0].stuff.jump = true;
+      }
+      if (
+        Math.sqrt(
+          (tanks[1].position.x - element.position.x) ** 2 +
+            (tanks[1].position.y - element.position.y) ** 2,
+        ) < 50 &&
+        tanks[1].altitude <= 0
+      ) {
+        tanks[1].stuff.jump = true;
+      }
     }
   });
 }
@@ -123,29 +157,64 @@ async function ui(app: Application) {
   app.stage
     .getChildrenByLabel("healthbar")
     .forEach((child) => app.stage.removeChild(child));
+  app.stage
+    .getChildrenByLabel("altitudebar")
+    .forEach((child) => app.stage.removeChild(child));
 
   // Draw healthbars for each tank
   for (const tank of tanks) {
-    const barWidth = 60;
-    const barHeight = 8;
+    const healthBarWidth = 60;
+    const healthBarHeight = 8;
     const healthPercent = Math.max(0, Math.min(1, tank.health / 100));
-    const bar = new Graphics();
-    bar.label = `healthbar`;
+    const HealthBar = new Graphics();
+    HealthBar.label = `healthbar`;
     // Background
-    bar.rect(-barWidth / 2, -tank.body.height / 2 - 20, barWidth, barHeight);
-    bar.fill(0xcccccc);
-    // Health
-    bar.rect(
-      -barWidth / 2,
+    HealthBar.rect(
+      -healthBarWidth / 2,
       -tank.body.height / 2 - 20,
-      barWidth * healthPercent,
-      barHeight,
+      healthBarWidth,
+      healthBarHeight,
     );
-    bar.fill(0xff4444);
+    HealthBar.fill(0xcccccc);
+    // Health
+    HealthBar.rect(
+      -healthBarWidth / 2,
+      -tank.body.height / 2 - 20,
+      healthBarWidth * healthPercent,
+      healthBarHeight,
+    );
+    HealthBar.fill(0xff4444);
     // Position above tank
-    bar.x = tank.position.x;
-    bar.y = tank.position.y;
-    app.stage.addChild(bar);
+    HealthBar.x = tank.position.x;
+    HealthBar.y = tank.position.y;
+    app.stage.addChild(HealthBar);
+
+    const altitudeBarWidth = 60;
+    const altitudeBarHeight = 8;
+    const altitudePercent = Math.max(0, Math.min(1, tank.altitude / 20));
+    const altitudeBar = new Graphics();
+    altitudeBar.label = `altitudebar`;
+    // Background
+    altitudeBar.rect(
+      -altitudeBarWidth / 2,
+      -tank.body.height / 2 - 30,
+      altitudeBarWidth,
+      altitudeBarHeight,
+    );
+    altitudeBar.fill(0xcccccc);
+    // Health
+    altitudeBar.rect(
+      -altitudeBarWidth / 2,
+      -tank.body.height / 2 - 40,
+      altitudeBarWidth * altitudePercent,
+      altitudeBarHeight,
+    );
+    altitudeBar.fill(0xff4400);
+    // Position above tank
+    altitudeBar.x = tank.position.x;
+    altitudeBar.y = tank.position.y;
+    app.stage.addChild(altitudeBar);
+
     if (tank.health <= 0) {
       const explosion = new Sprite(await Assets.load("./assets/explosion.png"));
       explosion.anchor.set(0.5);

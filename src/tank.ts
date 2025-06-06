@@ -14,7 +14,7 @@ export class Tank {
   barrel: Sprite;
   speed: number = 0;
   slide: Victor = new Victor(0, 0);
-  height: number = 0;
+  altitude: number = 0;
   keybinds: {
     forward: string;
     backward: string;
@@ -25,6 +25,7 @@ export class Tank {
   color: string; // default color
   mode: boolean = true; // true = tank, false = turret
   stuff: { [key: string]: boolean | string } = {};
+  stuffint: { [key: string]: number } = {};
   app: Application;
   bullets: Bullet[] = [];
   fireCooldown: number = 0;
@@ -118,7 +119,7 @@ export class Tank {
     this.barrel.position.set(this.position.x, this.position.y);
   }
   tick(deltaTime: number, pressedKeys: Set<string>) {
-    if (this.mode) {
+    if (this.mode && this.altitude <= 0) {
       if (pressedKeys.has(this.keybinds.forward)) {
         this.speed += 0.08 * deltaTime;
       }
@@ -189,10 +190,23 @@ export class Tank {
     this.go(true, this.speed * deltaTime);
     this.changePosition(this.slide.x * deltaTime, this.slide.y * deltaTime);
     this.slide.multiplyScalar(0.9 / deltaTime);
-    this.speed *= 0.99 * deltaTime;
+    if (this.altitude <= 0) {
+      this.speed *= 0.99 * deltaTime;
+    } else {
+      this.altitude -= 0.5 * deltaTime;
+      console.log(this.altitude);
+      this.speed += 0.04;
+    }
     for (const i of this.bullets) {
       i.tick(deltaTime);
     }
+
+    if (this.stuff.jump && this.altitude <= 20) {
+      this.altitude += 1 * deltaTime;
+    } else {
+      this.stuff.jump = false;
+    }
+    this.stuffint.pastalt = this.altitude;
   }
   bounce(otherTank: Tank | Obstacle) {
     otherTank.slide.add(

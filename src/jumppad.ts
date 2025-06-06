@@ -2,8 +2,9 @@ import { Application, Assets, Sprite, Texture } from "pixi.js";
 import { Bullet } from "./bulle";
 import Victor from "victor";
 import { Tank } from "./tank";
+import { Obstacle } from "./obstacle";
 
-export class Obstacle {
+export class Jumppad {
   position: { x: number; y: number };
   rotation: number;
 
@@ -18,7 +19,7 @@ export class Obstacle {
   constructor(bodyTexture: string, app: Application) {
     this.app = app;
     this.position = { x: 0, y: 0 };
-    this.rotation = Math.random() * Math.PI * 2;
+    this.rotation = 0;
     this.bodyTexture = bodyTexture;
     this.body = new Sprite();
     this.body.anchor.set(0.5);
@@ -28,10 +29,7 @@ export class Obstacle {
     app.stage.addChild(this.body);
     this.body.zIndex = 0;
     app.stage.sortableChildren = true;
-    this.body.setSize(
-      0.7 - Math.random() * 0.5 + 0.2,
-      0.7 - Math.random() * 0.5 + 0.2,
-    );
+    this.body.setSize(0.7);
   }
   async loadTextures() {
     this.bodyTexture = await Assets.load(this.bodyTexture);
@@ -60,26 +58,6 @@ export class Obstacle {
     this.position.x += Math.cos(angle) * speed;
     this.position.y += Math.sin(angle) * speed;
     this.body.position.set(this.position.x, this.position.y);
-  }
-  tick(deltaTime: number) {
-    if (this.position.x < 0) {
-      this.changePosition(1, 0);
-      this.speed = -this.speed * 0.3;
-    }
-    if (this.position.x > this.app.screen.width) {
-      this.changePosition(-1, 0);
-      this.speed = -this.speed * 0.3;
-    }
-    if (this.position.y < 0) {
-      this.changePosition(0, 1);
-      this.speed = -this.speed * 0.3;
-    }
-    if (this.position.y > this.app.screen.height) {
-      this.changePosition(0, -1);
-      this.speed = -this.speed * 0.3;
-    }
-    this.changePosition(this.slide.x * deltaTime, this.slide.y * deltaTime);
-    this.slide.multiplyScalar(0.9 / deltaTime);
   }
   bounce(otherTank: Tank | Obstacle) {
     otherTank.slide.add(

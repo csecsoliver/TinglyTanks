@@ -58,6 +58,7 @@ export class Bullet {
       this.explode("./assets/explosion.png", {
         x: this.position.x,
         y: this.position.y,
+       
       });
       this.app.stage.removeChild(this.sprite);
     }
@@ -81,6 +82,7 @@ export class Bullet {
     const explosion = new Sprite();
     explosion.anchor.set(0.5, 0.5);
     explosion.position.set(position.x, position.y);
+    explosion.rotation = Math.random() * Math.PI * 2;
     explosion.texture = await Assets.load(texture);
     this.app.stage.addChild(explosion);
     explosion.zIndex = 2;

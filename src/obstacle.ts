@@ -28,10 +28,7 @@ export class Obstacle {
     app.stage.addChild(this.body);
     this.body.zIndex = 0;
     app.stage.sortableChildren = true;
-    this.body.setSize(
-      0.7 - Math.random() * 0.5 + 0.2,
-      0.7 - Math.random() * 0.5 + 0.2,
-    );
+    this.body.setSize(0.7, 0.7);
   }
   async loadTextures() {
     this.bodyTexture = await Assets.load(this.bodyTexture);

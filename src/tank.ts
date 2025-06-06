@@ -193,7 +193,7 @@ export class Tank {
     if (this.altitude <= 0) {
       this.speed *= 0.99 * deltaTime;
     } else {
-      this.altitude -= 0.5 * deltaTime;
+      this.altitude -= 1 * deltaTime;
       console.log(this.altitude);
       this.speed += 0.04;
     }
@@ -202,10 +202,15 @@ export class Tank {
     }
 
     if (this.stuff.jump && this.altitude <= 20) {
-      this.altitude += 1 * deltaTime;
+      this.altitude += 2 * deltaTime;
+      this.speed = 15;
     } else {
       this.stuff.jump = false;
     }
+    if (this.stuffint.pastalt > 0 && this.altitude <= 0) {
+      this.fire();
+    }
+
     this.stuffint.pastalt = this.altitude;
   }
   bounce(otherTank: Tank | Obstacle) {

@@ -71,14 +71,14 @@ async function init() {
       0.75 * Math.PI,
     ),
   );
-  for (let index = 0; index < 10; index++) {
+  for (let index = 0; index < 20; index++) {
     crates.push(new Obstacle("./assets/crate.png", app as Application));
     crates[index].setPosition(
       Math.random() * app.screen.width,
       Math.random() * app.screen.height,
     );
   }
-  for (let index = 0; index < 3; index++) {
+  for (let index = 0; index < 10; index++) {
     jumppads.push(new Jumppad("./assets/boostpad.png", app as Application));
     jumppads[index].setPosition(
       Math.random() * app.screen.width,
@@ -205,11 +205,11 @@ async function ui(app: Application) {
     // Health
     altitudeBar.rect(
       -altitudeBarWidth / 2,
-      -tank.body.height / 2 - 40,
+      -tank.body.height / 2 - 30,
       altitudeBarWidth * altitudePercent,
       altitudeBarHeight,
     );
-    altitudeBar.fill(0xff4400);
+    altitudeBar.fill(0x006600);
     // Position above tank
     altitudeBar.x = tank.position.x;
     altitudeBar.y = tank.position.y;

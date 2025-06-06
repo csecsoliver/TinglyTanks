@@ -51,14 +51,14 @@ export class Bullet {
       this.enemy.body
         .getBounds()
         .containsPoint(this.position.x, this.position.y) &&
-      this.live
+      this.live &&
+      this.enemy.altitude <= 0
     ) {
       this.enemy.takeDamage(10);
       this.live = false;
       this.explode("./assets/explosion.png", {
         x: this.position.x,
         y: this.position.y,
-       
       });
       this.app.stage.removeChild(this.sprite);
     }

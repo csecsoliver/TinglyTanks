@@ -113,6 +113,7 @@ async function init() {
         tanks[1].bounce(element);
         element.bounce(tanks[1]);
       }
+      element.tick(time.deltaTime);
     }
   });
 }

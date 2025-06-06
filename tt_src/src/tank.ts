@@ -14,6 +14,7 @@ export class Tank {
   barrel: Sprite;
   speed: number = 0;
   slide: Victor = new Victor(0, 0);
+  height: number = 0;
   keybinds: {
     forward: string;
     backward: string;

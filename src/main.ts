@@ -15,12 +15,26 @@ window.addEventListener("keydown", (e) => {
 });
 window.addEventListener("keyup", (e) => {
   pressedKeys.delete(e.code);
-  e.preventDefault(); 
+  e.preventDefault();
 });
 init();
+keybinds();
+
+async function keybinds(){
+  document.getElementById
+}
+
+
+
+
+
+
+
 async function init() {
+  console.log("sasdadfgaf");
   // @ts-expect-error I don't know how this works, but maybe it works
   globalThis.__PIXI_APP__?.destroy();
+  document.querySelector("canvas")?.remove();
   const app = new Application();
   // @ts-expect-error I don't know how this works, but it works
   globalThis.__PIXI_APP__ = app as Application;
@@ -35,8 +49,17 @@ async function init() {
   tilingSprite.position.set(app.screen.width / 2, app.screen.height / 2);
   tilingSprite.tileScale.set(1);
   app.stage.addChild(tilingSprite);
-  tanks.length = 0;
-  crates.length = 0;
+  tanks.pop();
+  tanks.pop();
+  let k = crates.length;
+  for (let index = 0; index < k; index++) {
+    crates.pop();
+  }
+  k = jumppads.length;
+  for (let index = 0; index < k; index++) {
+    jumppads.pop();
+  }
+
   tanks.push(
     new Tank(
       "./assets/tankred.png",
@@ -76,11 +99,11 @@ async function init() {
       Math.random() * app.screen.height,
     );
   }
-  for (let index = 0; index < 10; index++) {
+  for (let index = 0; index < 7; index++) {
     jumppads.push(new Jumppad("./assets/boostpad.png", app as Application));
     jumppads[index].setPosition(
-      Math.random() * app.screen.width,
-      Math.random() * app.screen.height,
+      Math.random() * (app.screen.width - 200) + 100,
+      Math.random() * (app.screen.height - 200) + 100,
     );
   }
   tanks[0].setPosition(64, 64);
@@ -206,23 +229,39 @@ async function ui(app: Application) {
     app.stage.addChild(altitudeBar);
 
     if (tank.health <= 0) {
-      const explosion = new Sprite(await Assets.load("./assets/explosion.png"));
-      explosion.anchor.set(0.5);
-      explosion.position.set(tank.position.x, tank.position.y);
-      explosion.zIndex = 2;
-      app.stage.addChild(explosion);
-      const element = document.createElement("div");
-      element.className = "game-over";
-      element.innerHTML = `<h1>Game Over</h1><p>${tank.color} tank has been destroyed!</p><button onclick="location.reload()">Restart Game</button>`;
-      element.style.position = "absolute";
-      element.style.top = "50%";
-      element.style.left = "50%";
-      element.style.transform = "translate(-50%, -50%)";
-      element.style.zIndex = "1000";
-      document.getElementById("pixi-container")!.appendChild(element);
-      app.ticker.addOnce(() => {
-        app.ticker.stop();
-      });
+      // Only create overlay if it doesn't already exist
+      if (!document.querySelector(".game-over")) {
+        const explosion = new Sprite(
+          await Assets.load("./assets/explosion.png"),
+        );
+        explosion.anchor.set(0.5);
+        explosion.position.set(tank.position.x, tank.position.y);
+        explosion.zIndex = 2;
+        app.stage.addChild(explosion);
+        const element = document.createElement("div");
+        element.className = "game-over";
+        element.innerHTML = `<h1>Game Over</h1><p>${tank.color == "blue" ? "RED" : "BLUE"} tank is the winner!</p><button id="reset">Restart Game</button>`;
+
+        element.style.position = "absolute";
+        element.style.top = "50%";
+        element.style.left = "50%";
+        element.style.transform = "translate(-50%, -50%)";
+        element.style.zIndex = "1000";
+        element.style.background = "black";
+        element.style.padding = "20px";
+        element.style.borderRadius = "5px";
+        document.getElementById("pixi-container")!.appendChild(element);
+        console.log("peeps are ded");
+        document.getElementById("reset")!.onclick = (e) => {
+          console.log("adsdghaléeihfsdfsdf" + e);
+          // Remove overlay before restarting
+          element.remove();
+          init();
+        };
+        app.ticker.addOnce(() => {
+          app.ticker.stop();
+        });
+      }
     }
   }
 }

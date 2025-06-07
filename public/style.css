@@ -14,3 +14,6 @@ body {
     align-items: center;
     
 }
+#settings:hover{
+    height: 50%;
+}

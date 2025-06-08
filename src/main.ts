@@ -69,6 +69,9 @@ function keybinding(e: MouseEvent) {
     for (bind in keybinds[player]) {
       if (bind[0] == target.id[2]) {
         keybinds[player][bind] = key;
+        const store = window.localStorage;
+        store.setItem(target.id, keybinds[player][bind]);
+        document.getElementById(target.id)!.innerHTML = keybinds[player][bind];
       }
     }
   });

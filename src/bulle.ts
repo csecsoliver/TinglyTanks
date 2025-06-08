@@ -40,7 +40,6 @@ export class Bullet {
     const shooteffect = new Audio("./assets/cg1.wav");
     shooteffect.volume = 0.2;
     shooteffect.play();
-
   }
   async loadTextures() {
     this.texture = await Assets.load(this.texture);

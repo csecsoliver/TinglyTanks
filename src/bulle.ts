@@ -37,6 +37,10 @@ export class Bullet {
     this.sprite.texture = this.texture as Texture;
     console.log("Bullet created with texture:", this.texture);
     this.sprite.setSize(10);
+    const shooteffect = new Audio("./assets/cg1.wav");
+    shooteffect.volume = 0.2;
+    shooteffect.play();
+
   }
   async loadTextures() {
     this.texture = await Assets.load(this.texture);

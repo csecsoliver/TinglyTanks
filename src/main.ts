@@ -23,6 +23,7 @@ const keybinds = {
     action: "Backquote",
   },
 };
+const music = new Audio();
 // Track currently pressed keys
 const pressedKeys = new Set<string>();
 window.addEventListener("keydown", (e) => {
@@ -75,8 +76,17 @@ for (const i of buttons) {
   i.onclick = keybinding;
 }
 
+document.addEventListener("click", () => {
+  if (music.paused) {
+    music.play();
+  }
+});
 async function init() {
   await findKeybinds();
+  music.src = "./assets/music.mp3";
+  music.play();
+  music.volume = 0.5;
+  music.loop = true;
   console.log("sasdadfgaf");
   // @ts-expect-error This definitely works
   globalThis.__PIXI_APP__?.destroy();

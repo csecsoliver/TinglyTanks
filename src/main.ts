@@ -1,4 +1,11 @@
-import { Application, Assets, Graphics, Sprite, TilingSprite } from "pixi.js";
+import {
+  Application,
+  Assets,
+  GlRenderTargetAdaptor,
+  Graphics,
+  Sprite,
+  TilingSprite,
+} from "pixi.js";
 // @ts-expect-error I don't know how this works, but it works
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Level } from "./level";
@@ -7,6 +14,22 @@ import { Obstacle } from "./obstacle";
 import { tanks, crates, jumppads } from "./actors";
 import { Jumppad } from "./jumppad";
 
+const keybinds = {
+  p1: {
+    forward: "ArrowUp",
+    backward: "ArrowDown",
+    left: "ArrowLeft",
+    right: "ArrowRight",
+    action: "Space",
+  },
+  p2: {
+    forward: "KeyW",
+    backward: "KeyS",
+    left: "KeyA",
+    right: "KeyD",
+    action: "Backquote",
+  },
+};
 // Track currently pressed keys
 const pressedKeys = new Set<string>();
 window.addEventListener("keydown", (e) => {
@@ -18,21 +41,48 @@ window.addEventListener("keyup", (e) => {
   e.preventDefault();
 });
 init();
-keybinds();
 
-async function keybinds(){
-  document.getElementById
+async function findKeybinds() {
+  const store = window.localStorage;
+  let k: keyof typeof keybinds;
+  for (k in keybinds) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const player = keybinds[k];
+    let l: keyof typeof player;
+    for (l in keybinds[k]) {
+      if (store.getItem(k + l[0]) != null) {
+        keybinds[k][l] = store.getItem(k + l[0])!;
+      }
+      document.getElementById(k + l[0])!.innerHTML = keybinds[k][l];
+    }
+  }
+}
+let target: HTMLElement;
+function keybinding(e: MouseEvent) {
+  target = e.target as HTMLElement;
+  target.addEventListener("keydown", (e) => {
+    const key = e.code;
+    const player = target.id.slice(0, 2) as keyof typeof keybinds;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const bindtype = keybinds[player];
+    let bind: keyof typeof bindtype;
+    for (bind in keybinds[player]) {
+      if (bind[0] == target.id[2]) {
+        keybinds[player][bind] = key;
+      }
+    }
+  });
 }
 
-
-
-
-
-
+const buttons = document.getElementsByTagName("button");
+for (const i of buttons) {
+  i.onclick = keybinding;
+}
 
 async function init() {
+  await findKeybinds();
   console.log("sasdadfgaf");
-  // @ts-expect-error I don't know how this works, but maybe it works
+  // @ts-expect-error This definitely works
   globalThis.__PIXI_APP__?.destroy();
   document.querySelector("canvas")?.remove();
   const app = new Application();
@@ -65,13 +115,7 @@ async function init() {
       "./assets/tankred.png",
       "./assets/barrel.png",
       app as Application,
-      {
-        forward: "ArrowUp",
-        backward: "ArrowDown",
-        left: "ArrowLeft",
-        right: "ArrowRight",
-        action: "Space",
-      },
+      keybinds.p1,
       "./assets/bulletRed1.png",
       -0.25 * Math.PI,
     ),
@@ -81,13 +125,7 @@ async function init() {
       "./assets/tankblue.png",
       "./assets/barrel.png",
       app as Application,
-      {
-        forward: "KeyW",
-        backward: "KeyS",
-        left: "KeyA",
-        right: "KeyD",
-        action: "Backquote",
-      },
+      keybinds.p2,
       "./assets/bulletBlue1.png",
       0.75 * Math.PI,
     ),

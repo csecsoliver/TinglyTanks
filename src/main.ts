@@ -1,11 +1,4 @@
-import {
-  Application,
-  Assets,
-  GlRenderTargetAdaptor,
-  Graphics,
-  Sprite,
-  TilingSprite,
-} from "pixi.js";
+import { Application, Assets, Graphics, Sprite, TilingSprite } from "pixi.js";
 // @ts-expect-error I don't know how this works, but it works
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Level } from "./level";

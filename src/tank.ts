@@ -118,7 +118,12 @@ export class Tank {
     this.body.position.set(this.position.x, this.position.y);
     this.barrel.position.set(this.position.x, this.position.y);
   }
-  tick(deltaTime: number, pressedKeys: Set<string>) {
+  tick(dT: number, pressedKeys: Set<string>) {
+    let deltaTime = dT;
+    document.getElementById("mult")!.innerHTML = (1 / deltaTime).toString();
+    if (dT >= 4) {
+      deltaTime = 4;
+    }
     if (this.mode && this.altitude <= 0) {
       if (pressedKeys.has(this.keybinds.forward)) {
         this.speed += 0.08 * deltaTime;
@@ -191,7 +196,7 @@ export class Tank {
     this.changePosition(this.slide.x * deltaTime, this.slide.y * deltaTime);
     this.slide.multiplyScalar(0.9 / deltaTime);
     if (this.altitude <= 0) {
-      this.speed *= 0.99 * deltaTime;
+      this.speed *= 0.99 / deltaTime;
     } else {
       this.altitude -= 1 * deltaTime;
       console.log(this.altitude);

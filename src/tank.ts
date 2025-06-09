@@ -119,17 +119,17 @@ export class Tank {
     this.barrel.position.set(this.position.x, this.position.y);
   }
   tick(dT: number, pressedKeys: Set<string>) {
-    let deltaTime = dT;
-    document.getElementById("mult")!.innerHTML = (1 / deltaTime).toString();
+    let deltaTime = 1;
+    document.getElementById("mult")!.innerHTML = dT.toString();
     if (dT >= 4) {
-      deltaTime = 4;
+      deltaTime = 1;
     }
     if (this.mode && this.altitude <= 0) {
       if (pressedKeys.has(this.keybinds.forward)) {
-        this.speed += 0.08 * deltaTime;
+        this.speed += 0.08 ** deltaTime;
       }
       if (pressedKeys.has(this.keybinds.backward)) {
-        this.speed -= 0.08 * deltaTime;
+        this.speed -= 0.08 ** deltaTime;
       }
       if (pressedKeys.has(this.keybinds.left)) {
         this.changeRotation(-0.08 * deltaTime);
@@ -194,9 +194,9 @@ export class Tank {
 
     this.go(true, this.speed * deltaTime);
     this.changePosition(this.slide.x * deltaTime, this.slide.y * deltaTime);
-    this.slide.multiplyScalar(0.9 / deltaTime);
+    this.slide.multiplyScalar(0.9 * deltaTime);
     if (this.altitude <= 0) {
-      this.speed *= 0.99 / deltaTime;
+      this.speed *= 0.99 * deltaTime;
     } else {
       this.altitude -= 1 * deltaTime;
       console.log(this.altitude);

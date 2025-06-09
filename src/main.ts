@@ -157,6 +157,8 @@ async function init() {
   tanks[1].enemy = tanks[0];
 
   app.ticker.add((time) => {
+    time.maxFPS = 60;
+    time.minFPS = 60;
     ui(app);
     tanks[0].tick(time.deltaTime, pressedKeys);
     tanks[1].tick(time.deltaTime, pressedKeys);

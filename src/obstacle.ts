@@ -76,7 +76,7 @@ export class Obstacle {
       this.speed = -this.speed * 0.3;
     }
     this.changePosition(this.slide.x * deltaTime, this.slide.y * deltaTime);
-    this.slide.multiplyScalar(0.9 / deltaTime);
+    this.slide.multiplyScalar(0.9 * deltaTime);
   }
   bounce(otherTank: Tank | Obstacle) {
     otherTank.slide.add(

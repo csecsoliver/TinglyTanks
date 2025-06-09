@@ -24,6 +24,7 @@ const keybinds = {
   },
 };
 const music = new Audio();
+const boost = new Audio("./assets/boost.mp3");
 // Track currently pressed keys
 const pressedKeys = new Set<string>();
 window.addEventListener("keydown", (e) => {
@@ -203,6 +204,8 @@ async function init() {
         tanks[0].altitude <= 0
       ) {
         tanks[0].stuff.jump = true;
+        boost.currentTime = 0;
+        boost.play();
       }
       if (
         Math.sqrt(
@@ -212,6 +215,8 @@ async function init() {
         tanks[1].altitude <= 0
       ) {
         tanks[1].stuff.jump = true;
+        boost.currentTime = 0;
+        boost.play();
       }
     }
   });
